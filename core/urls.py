@@ -6,6 +6,6 @@ from . import views
 
 
 urlpatterns = [
-path("<int:id>", views.index, name="index"),
 path("spin/", views.spin, name="spin"),
+path("", views.index, name="index"),
 ]     

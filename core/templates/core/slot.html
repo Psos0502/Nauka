@@ -1,13 +1,47 @@
 <h1>🎰 Slot Machine</h1>
 
-<p>
-    {% for symbol in result %}
-        {{ symbol }}
-    {% endfor %}
-</p>
+<p>Aktualny bet: <strong>{{ bet }}</strong></p>
+<p>Saldo: <strong>{{ balance }}</strong></p>
+
+<form method="post">
+    {% csrf_token %}
+
+    <button type="submit" name="set_bet" value="10">Bet 10</button>
+    <button type="submit" name="set_bet" value="50">Bet 50</button>
+    <button type="submit" name="set_bet" value="100">Bet 100</button>
+
+    <br><br>
+
+    <button type="submit" name="spin">SPIN</button>  
+
+    <br><br>
+
+    <button type="submit" name="reset">RESET</button>  
+</form>
+
+<hr>
+
+{% if result %}
+    <p>
+       {% for symbol in result %} 
+        <span style="font-size: 2rem">{{symbol}}</span>
+        {% endfor %}
+    </p>
 
 {% if win %}
     <h2>🎉 Wygrana!</h2>
 {% else %}
-    <h2>😢 Spróbuj ponownie</h2>
+    <h2>😞 Spróbuj ponownie!</h2>
 {% endif %}
+
+    <p>Wynik: {{ payout }}</p>
+
+{% else %}
+    <p>Kliknij „Spin”, aby zagrać 🎰</p>
+{% endif %}
+
+{% if bankrut %}
+    <p>Brak środków, wypad z kasyna biedaku</p>
+{% endif %}
+
+
