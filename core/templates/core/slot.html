@@ -1,0 +1,13 @@
+<h1>🎰 Slot Machine</h1>
+
+<p>
+    {% for symbol in result %}
+        {{ symbol }}
+    {% endfor %}
+</p>
+
+{% if win %}
+    <h2>🎉 Wygrana!</h2>
+{% else %}
+    <h2>😢 Spróbuj ponownie</h2>
+{% endif %}
