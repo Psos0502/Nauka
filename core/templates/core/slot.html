@@ -27,14 +27,16 @@
         <span style="font-size: 2rem">{{symbol}}</span>
         {% endfor %}
     </p>
-
-{% if win %}
-    <h2>🎉 Wygrana!</h2>
-{% else %}
-    <h2>😞 Spróbuj ponownie!</h2>
 {% endif %}
 
-    <p>Wynik: {{ payout }}</p>
+{% if played %}
+    {% if win %}
+        <h2>🎉 Wygrana!</h2>
+    {% else %}
+        <h2>😞 Spróbuj ponownie!</h2>
+    {% endif %}
+
+        <p>Wynik: {{ payout }}</p>
 
 {% else %}
     <p>Kliknij „Spin”, aby zagrać 🎰</p>

@@ -3,21 +3,13 @@ from django.http import HttpResponse
 import random
 # STRONA STARTOWA
 def index(request):
-    return HttpResponse("Witaj w kasynie!")
+     if request.method == "POST" and "start_game" in request.POST:
+            return redirect("spin")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+     return render(request, "core/main_page.html", {
+        "message": "Witaj w kasynie",
+     })
+     
 
 # FUNKCJA ODPOWIADAJACA ZA LOGIKE GRY
 def spin(request):
@@ -30,11 +22,11 @@ def spin(request):
 
     if "balance" not in request.session:
         request.session["balance"] = 1000
-
-    result = []
-    win = False
-    payout = 0
-    bankrut = False
+    played = request.session.pop("played", False)
+    result = request.session.get("result", ["❓", "❓", "❓"])
+    win = request.session.pop("win", False)
+    payout = request.session.pop("payout", 0)
+    bankrut = request.session.get("balance", 0) <= 0
 
     multipliers = {
         "🍒": 3,
@@ -66,19 +58,23 @@ def spin(request):
                     win = False
                     payout = -bet
 
-                balance += payout
-                request.session["balance"] = balance
+                request.session["balance"] += payout
 
-    bet = request.session["bet"]            
-    balance = request.session["balance"]
-    if balance == 0:
-        bankrut = True
+            request.session.update({
+                "result": result,
+                "win": win,
+                "payout": payout,
+                "played": True,
+            })
+            return redirect("spin")
+
 
     return render(request, "core/slot.html", {
         "result": result,
         "win": win,
         "payout": payout,
-        "bet": bet,
-        "balance": balance,
+        "bet": request.session["bet"],
+        "balance": request.session["balance"],
         "bankrut": bankrut,
+        "played": played,
     })
