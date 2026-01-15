@@ -1,7 +1,18 @@
-<h1>{{ message }}</h1>
+{% load static %}
 
-<form method="post" action="{% url 'index' %}">
-{% csrf_token %}
-<button type="submit" name="start_game" value="1">Pogamblujmy</button>
+<link rel="stylesheet" href="{% static 'css/main_page.css' %}">
 
-</form>
+<div class="hero">
+    <form method="post" action="{% url 'index' %}">
+        {% csrf_token %}
+        <button
+            class="losuj-button"
+            type="submit"
+            name="start_game"
+            value="1"
+            aria-label="Losuj"
+        ></button>
+    </form>
+</div>
+
+
