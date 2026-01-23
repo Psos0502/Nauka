@@ -18,3 +18,6 @@ pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
 http://127.0.0.1:8000/
+
+trello:
+<img width="1917" height="910" alt="image" src="https://github.com/user-attachments/assets/6320851d-5386-434f-879b-a88e3fbebf18" />
