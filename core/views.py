@@ -29,11 +29,11 @@ def spin(request):
     bankrut = request.session.get("balance", 0) <= 0
 
     multipliers = {
-        "🍒": 3,
-        "🍋": 4,
-        "🍏": 5,
-        "🍍": 6,
-        "⭐": 10,
+        "💣": 3,
+        "🐥": 4,
+        "🦆": 5,
+        "🌪️": 6,
+        "🥕": 10,
     }
     if request.method == "POST":
 
@@ -47,7 +47,7 @@ def spin(request):
 
             if balance >= bet:
 
-                SYMBOLS = ["🍒", "🍋", "🍏", "🍍", "⭐"]
+                SYMBOLS = ["💣", "🐥", "🦆", "🌪️", "🥕"]
                 result = [random.choice(SYMBOLS) for _ in range(3)]
 
                 if len(set(result)) == 1:
