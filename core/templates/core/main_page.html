@@ -1,18 +1,151 @@
 {% load static %}
 
-<link rel="stylesheet" href="{% static 'css/main_page.css' %}">
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrotka Casino</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #d43737; --dark: #820120; --gold: #ffd700; --green: #0a5c36;
+            --font: 'Luckiest Guy', cursive;
+        }
+        body {
+            background-color: var(--red);
+            background-image: radial-gradient(circle at center, var(--dark), var(--red)), repeating-radial-gradient(circle at center, var(--dark), var(--dark) 60px, transparent 120px, transparent 60px);
+            background-blend-mode: multiply;
+            margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative;
+            font-family: var(--font); letter-spacing: 1px;
+        }
+        body::before {
+            content: ''; position: absolute; top: 50%; left: 50%; width: 200vmax; height: 200vmax;
+            background: var(--green) url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiMwYTVjMzYiLz48cGF0aCBkPSJNMCAwaDR2NEgwIiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz48L3N2Zz4=');
+            border-radius: 50%; transform: translate(-50%, -50%) scale(0); z-index: 10;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: inset 0 0 100px rgba(0,0,0,0.5); will-change: transform;
+        }
+        body.active::before { transform: translate(-50%, -50%) scale(1); }
 
-<div class="hero">
-    <form method="post" action="{% url 'index' %}">
-        {% csrf_token %}
-        <button
-            class="losuj-button"
-            type="submit"
-            name="start_game"
-            value="1"
-            aria-label="Losuj"
-        ></button>
-    </form>
-</div>
+        .start-container {
+            display: grid; place-items: center; grid-template-areas: "stack"; position: relative; z-index: 20;
+            transition: 0.8s;
+        }
+        body.active .start-container { transform: scale(0); opacity: 0; pointer-events: none; }
 
+        .center-button {
+            grid-area: stack; width: 250px; height: 250px;
+            background: url("{% static 'img/image.png' %}") center/cover no-repeat;
+            border-radius: 50%; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: transform 0.3s; z-index: 2;
+        }
+        .center-button:hover { transform: scale(1.05); }
 
+        .curved-text-svg { grid-area: stack; width: 400px; height: 400px; pointer-events: none; z-index: 1; animation: slowSpin 60s linear infinite; }
+        @keyframes slowSpin { to { transform: rotate(360deg); } }
+
+        .brand-text-path { font-family: var(--font); font-size: 3.5rem; fill: var(--gold); text-shadow: 4px 4px 0 #630015; text-transform: uppercase; letter-spacing: 2px; }
+
+        .hidden-content {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;
+            z-index: 30; opacity: 0; pointer-events: none; transition: opacity 1s ease-in-out;
+        }
+        .hidden-content img { width: 400px; height: auto; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); }
+        body.active .hidden-content { opacity: 1; pointer-events: auto; transition-delay: 0.8s; }
+
+        .scatter-img {
+            position: absolute; width: 140px; z-index: 15; opacity: 0; pointer-events: none;
+            transition: opacity 1s ease-in-out;
+            -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 95%);
+            mask-image: radial-gradient(ellipse at center, black 40%, transparent 95%);
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+            top: var(--t, auto); bottom: var(--b, auto); left: var(--l, auto); right: var(--r, auto);
+            transform: var(--tr, rotate(var(--deg, 0deg)));
+        }
+        body.active .scatter-img { opacity: 0.9; transition-delay: 0.8s; }
+
+        .side-menu {
+            position: fixed; top: 50%; right: -100px; transform: translateY(-50%);
+            width: 50px; height: 100px; background: rgba(0, 30, 10, 0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border-radius: 12px 0 0 12px; color: var(--gold); z-index: 100;
+            box-shadow: -2px 0 15px rgba(0,0,0,0.2); cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            overflow: hidden;
+            will-change: width, height, right;
+        }
+        body.active .side-menu { right: 0; transition-delay: 0.5s; } 
+
+        .side-menu.expanded {
+            right: 20px; width: 260px; height: 340px;
+            border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 30, 10, 0.85); box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            flex-direction: column; justify-content: flex-start; align-items: stretch; padding: 20px;
+            transition-delay: 0s;
+        }
+
+        .menu-content { 
+            opacity: 0; visibility: hidden;
+            min-width: 220px;
+            transition: opacity 0.2s ease-out;
+        }
+        .side-menu.expanded .menu-content { 
+            opacity: 1; visibility: visible; 
+            transition: opacity 0.4s ease-in 0.4s;
+        }
+
+        .menu-content h2 { color: var(--gold); text-transform: uppercase; text-align: center; margin: 0 0 15px 0; font-size: 1.5rem; text-shadow: 0 2px 2px rgba(0,0,0,0.8); border-bottom: 1px solid rgba(255,215,0,0.2); padding-bottom: 10px; }
+        .legend-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 6px 10px; font-size: 1.2rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .legend-icon { font-size: 1.4rem; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3)); }
+        .legend-value { color: #fff; font-weight: bold; text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+
+        @media (max-width: 600px) {
+            .scatter-img { width: 70px; }
+            .side-menu.expanded { width: 220px; right: 10px; }
+            .pos-mid { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="start-container">
+        <a href="{% url 'spin' %}" class="center-button"></a>
+        <svg class="curved-text-svg" viewBox="0 0 400 400">
+            <path id="c1" d="M 50,200 A 150,150 0 1,1 350,200" fill="none" />
+            <path id="c2" d="M 50,200 A 150,150 0 0,0 350,200" fill="none" />
+            <text class="brand-text-path" dy="-10"> <textPath href="#c1" startOffset="50%" text-anchor="middle">CARROTKA</textPath></text>
+            <text class="brand-text-path" dominant-baseline="hanging" dy="10"> <textPath href="#c2" startOffset="50%" text-anchor="middle">CASINO</textPath></text>
+        </svg>
+    </div>
+
+    <img src="{% static 'img/1.jpg' %}" class="scatter-img" style="--t:30px; --l:30px; --deg:-15deg">
+    <img src="{% static 'img/2.jpg' %}" class="scatter-img" style="--b:30px; --l:30px; --deg:5deg">
+    <img src="{% static 'img/3.jpg' %}" class="scatter-img" style="--t:30px; --r:30px; --deg:10deg">
+    <img src="{% static 'img/4.jpg' %}" class="scatter-img" style="--b:30px; --r:30px; --deg:-8deg">
+    <img src="{% static 'img/5.jpg' %}" class="scatter-img pos-mid" style="--t:50%; --l:22%; --tr:translateY(-50%) rotate(-12deg)">
+    <img src="{% static 'img/6.jpg' %}" class="scatter-img pos-mid" style="--t:50%; --r:22%; --tr:translateY(-50%) rotate(12deg)">
+    <img src="{% static 'img/7.jpg' %}" class="scatter-img pos-mid" style="--t:15%; --l:20%; --deg:-8deg">
+    <img src="{% static 'img/8.jpg' %}" class="scatter-img pos-mid" style="--t:70%; --l:22%; --deg:10deg">
+    <img src="{% static 'img/9.jpg' %}" class="scatter-img pos-mid" style="--t:75%; --r:22%; --deg:-15deg">
+    <img src="{% static 'img/10.jpg' %}" class="scatter-img pos-mid" style="--t:18%; --r:21%; --deg:5deg">
+
+    <div class="hidden-content">
+        <img src="{% static 'pirat.png' %}" alt="Pirat">
+    </div>
+
+    <div class="side-menu" id="side-menu">
+        <div class="menu-content">
+            <h2>Mnożnik Wygranych</h2>
+            <div class="legend-item"><span class="legend-icon">💣</span><span class="legend-value">x3</span></div>
+            <div class="legend-item"><span class="legend-icon">🐥</span><span class="legend-value">x4</span></div>
+            <div class="legend-item"><span class="legend-icon">🦆</span><span class="legend-value">x5</span></div>
+            <div class="legend-item"><span class="legend-icon">🌪️</span><span class="legend-value">x6</span></div>
+            <div class="legend-item"><span class="legend-icon">🥕</span><span class="legend-value">x10</span></div>
+        </div>
+    </div>
+
+</body>
+</html>

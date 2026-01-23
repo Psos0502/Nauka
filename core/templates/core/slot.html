@@ -1,187 +1,325 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
 <title>Jednoręki Bandyta</title>
+
 <style>
 body {
-    background: radial-gradient(circle at top, #111, #000);
-    font-family: 'Arial', sans-serif;
-    text-align: center;
-    color: #fff;
-    padding: 20px;
-}
-
-.slot-cabinet {
-    display: inline-block;
-    background: #222;
-    border: 6px solid #d4af37;
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 0 40px gold, 0 0 60px rgba(255, 215, 0, 0.5);
-    position: relative;
-}
-
-.slot-machine {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin: 20px auto;
-    padding: 20px;
-    background: #111;
-    border: 3px solid #ffd700;
-    border-radius: 12px;
-    box-shadow: inset 0 0 20px #fff, 0 0 20px gold;
-}
-
-.reel {
-    width: 70px;
-    height: 70px;
-    background: #000;
-    color: gold;
-    border-radius: 10px;
+    margin: 0;
+    min-height: 100vh;
+    background: #165f3a;
+    font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 2.8rem;
-    box-shadow: 0 0 10px gold, inset 0 0 5px #fff;
+    overflow: hidden;
+}
+
+/* ===== RAMKA ===== */
+.frame-wrapper {
+    position: relative;
+    width: 550px;
+    height: 760px;
+    z-index: 5;
+}
+
+.frame-wrapper img {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* ===== SLOTY W ŚRODKU RAMKI ===== */
+.slot-cabinet {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    width: 300px;
+   
+    padding: 20px;
+    text-align: center;
+    color: white;
+
+   
+}
+
+/* ===== SLOT MACHINE ===== */
+.slot-machine {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 15px;
+    margin: 15px 0;
+    background: #000;
+    border: 3px solid gold;
+    border-radius: 12px;
+    box-shadow: inset 0 0 15px #fff, 0 0 20px gold;
+}
+
+.reel {
+    width: 65px;
+    height: 65px;
+    background: #000;
+    border-radius: 10px;
+    font-size: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 10px #fff, 0 0 10px gold;
     transition: transform 0.2s;
 }
 
 .reel.spinning {
-    opacity: 0.7;
     transform: scale(1.1);
-    box-shadow: 0 0 25px #00ffea, inset 0 0 10px #fff;
+    opacity: 0.7;
 }
 
-.lever {
-    position: absolute;
-    right: -50px;
-    top: 50%;
-    width: 30px;
-    height: 120px;
-    background: #444;
-    border: 3px solid #d4af37;
-    border-radius: 10px;
-    cursor: pointer;
-    transform: translateY(-50%);
-}
-
-.lever:active {
-    transform: translateY(-50%) translateX(2px) translateY(2px);
-}
-
+/* ===== LED ===== */
 .led {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     background: red;
     border-radius: 50%;
     display: inline-block;
-    margin: 0 2px;
+    margin: 2px;
     animation: blink 1s infinite;
 }
 
 @keyframes blink {
-    0%,50%,100% { opacity: 1; }
-    25%,75% { opacity: 0.2; }
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.3; }
 }
 
-h2.win { color: lime; text-shadow: 0 0 15px #00ff00; animation: blink 1s infinite; }
-h2.lose { color: red; text-shadow: 0 0 15px #ff0000; animation: blink 1s infinite; }
+/* ===== INFO ===== */
+.bet { color: lime; }
+.balance { color: cyan; }
 
-p.balance { color: cyan; font-size: 1.2rem; }
-p.bet { color: lime; font-size: 1.2rem; }
+.win { color: lime; text-shadow: 0 0 10px lime; }
+.lose { color: red; text-shadow: 0 0 10px red; }
 
-button { 
-    font-size:1.2rem; 
-    padding:8px 15px; 
-    margin:5px; 
-    background:gold; 
-    color:black; 
-    border:none; 
-    border-radius:8px; 
-    cursor:pointer; 
-    box-shadow:0 0 10px gold; 
-    transition: 0.1s;
+/* ===== BUTTONS ===== */
+button {
+    margin: 4px;
+    padding: 6px 12px;
+    font-size: 1rem;
+    background: gold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 0 10px gold;
 }
-button:hover { transform:scale(1.05); background:#ffdd33; }
+
+button:hover {
+    background: #ffdd33;
+}
+
+/* ===== ROZRZUCONE OBRAZY W TLE ===== */
+.scatter {
+    position: absolute;
+    width: 140px;
+    opacity: 0.75;
+    filter: blur(0.5px);
+    z-index: 1;
+    transform: rotate(var(--rot));
+    transition: transform 1s ease;
+}
+
+.scatter:hover {
+    transform: scale(1.05) rotate(var(--rot));
+    opacity: 0.9;
+}
+
+/* pozycje */
+.s1 { top: 40px; left: 40px; --rot: -15deg; }
+.s2 { top: 60px; right: 60px; --rot: 12deg; }
+.s3 { top: 35%; left: 16%; --rot: -8deg; }
+.s4 { top: 35%; right: 22%; --rot: 10deg; }
+.s5 { bottom: 30%; left: 18%; --rot: 4deg; }
+.s6 { bottom: 30%; right: 22%; --rot: -8deg; }
+.s7 { bottom: 60px; left: 60px; --rot: -10deg; }
+.s8 { bottom: 60px; right: 60px; --rot: 14deg; }
+
+
+#multiplier-tile {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 60px;
+    background: #0b3d24;
+    border: 3px solid gold;
+    border-radius: 12px;
+    box-shadow: 0 0 15px gold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    cursor: pointer;
+    z-index: 20;
+    transition: transform 0.3s;
+}
+
+#multiplier-tile:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* ===== PANEL ===== */
+#multiplier-panel {
+    position: fixed;
+    right: -260px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 240px;
+    background: rgba(10, 40, 25, 0.95);
+    border: 3px solid gold;
+    border-radius: 16px;
+    box-shadow: 0 0 25px gold;
+    padding: 20px;
+    z-index: 30;
+    transition: right 0.4s ease;
+    color: white;
+}
+
+#multiplier-panel.active {
+    right: 90px;
+}
+
+#multiplier-panel h3 {
+    text-align: center;
+    color: gold;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ===== WIERSZE ===== */
+.multiplier-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    font-size: 1.1rem;
+}
+
+.multiplier-row span:last-child {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+
 </style>
 </head>
+
 <body>
 
-<div class="slot-cabinet">
-    <h1>🎰 Jednoręki bandyta</h1>
+    <!-- KAFELEK OTWIERAJĄCY -->
+<div id="multiplier-tile">🎯</div>
 
-    <div class="slot-machine">
-        <div class="reel">{{ result.0 }}</div>
-        <div class="reel">{{ result.1 }}</div>
-        <div class="reel">{{ result.2 }}</div>
+<!-- PANEL MNOŻNIKÓW -->
+<div id="multiplier-panel">
+    <h3>Mnożnik<br>Wygranych</h3>
+
+    <div class="multiplier-row">
+        <span>💣</span><span>x3</span>
     </div>
-
-    <!-- dekoracja -->
-    <div>
-        <span class="led"></span>
-        <span class="led"></span>
-        <span class="led"></span>
-        <span class="led"></span>
+    <div class="multiplier-row">
+        <span>🐥</span><span>x4</span>
     </div>
-
-    <!-- spin -->
-    <div class="lever" onclick="triggerSpin()"></div>
-
-    <p class="bet">Aktualny bet: <strong>{{ bet }}</strong></p>
-    <p class="balance">Saldo: <strong>{{ balance }}</strong></p>
-
-    {% if played %}
-        {% if win %}
-            <h2 class="win">🎉 Wygrana!</h2>
-        {% else %}
-            <h2 class="lose">😞 Spróbuj ponownie!</h2>
-        {% endif %}
-        <p>Wynik: {{ payout }}</p>
-    {% else %}
-        <p>Kliknij dźwignię lub SPIN</p>
-    {% endif %}
-
-    {% if bankrut %}
-    <p>Brak środków, wypad z kasyna 😅</p>
-    {% endif %}
+    <div class="multiplier-row">
+        <span>🦆</span><span>x5</span>
+    </div>
+    <div class="multiplier-row">
+        <span>🌪️</span><span>x6</span>
+    </div>
+    <div class="multiplier-row">
+        <span>🥕</span><span>x10</span>
+    </div>
 </div>
 
-<!-- Formularz bet, spin, reset -->
-<form method="post" id="spinForm">
-    {% csrf_token %}
-    <input type="hidden" name="spin" id="spinInput">
 
-    <button type="submit" name="set_bet" value="10">Bet 10</button>
-    <button type="submit" name="set_bet" value="50">Bet 50</button>
-    <button type="submit" name="set_bet" value="100">Bet 100</button>
+    <!-- ROZRZUCONE GRAFIKI W TLE -->
+<img src="{% static 'img/1.jpg' %}" class="scatter s1">
+<img src="{% static 'img/2.jpg' %}" class="scatter s2">
+<img src="{% static 'img/3.jpg' %}" class="scatter s3">
+<img src="{% static 'img/4.jpg' %}" class="scatter s4">
+<img src="{% static 'img/5.jpg' %}" class="scatter s5">
+<img src="{% static 'img/6.jpg' %}" class="scatter s6">
+<img src="{% static 'img/7.jpg' %}" class="scatter s7">
+<img src="{% static 'img/8.jpg' %}" class="scatter s8">
 
-    <button type="submit" name="spin">SPIN</button>
-    <button type="submit" name="reset">RESET</button>
-</form>
+
+<div class="frame-wrapper">
+    <!-- RAMKA -->
+    <img src="{% static 'img/pirat.png' %}" alt="Ramka">
+
+    <!-- SLOTY W ŚRODKU -->
+    <div class="slot-cabinet">
+    
+
+        <div class="slot-machine">
+            <div class="reel">{{ result.0 }}</div>
+            <div class="reel">{{ result.1 }}</div>
+            <div class="reel">{{ result.2 }}</div>
+        </div>
+
+        <div>
+            <span class="led"></span>
+            <span class="led"></span>
+            <span class="led"></span>
+            <span class="led"></span>
+        </div>
+
+        <p class="bet">Bet: {{ bet }}</p>
+        <p class="balance">Saldo: {{ balance }}</p>
+
+        {% if played %}
+            {% if win %}
+                <p class="win">🎉 WYGRANA!</p>
+            {% else %}
+                <p class="lose">😞 Spróbuj ponownie</p>
+            {% endif %}
+            <p>Wynik: {{ payout }}</p>
+        {% else %}
+            <p>Kliknij SPIN</p>
+        {% endif %}
+
+        {% if bankrut %}
+            <p>Brak środków 💀</p>
+        {% endif %}
+
+        <form method="post" id="spinForm">
+            {% csrf_token %}
+            <input type="hidden" name="spin" id="spinInput">
+
+            <button type="submit" name="set_bet" value="10">Bet 10</button>
+            <button type="submit" name="set_bet" value="50">Bet 50</button>
+            <button type="submit" name="set_bet" value="100">Bet 100</button>
+
+            <br>
+            <button type="submit" name="spin">SPIN</button>
+            <button type="submit" name="reset">RESET</button>
+        </form>
+    </div>
+</div>
 
 <script>
 const form = document.getElementById("spinForm");
 const reels = document.querySelectorAll(".reel");
-const spinInput = document.getElementById("spinInput");
 const symbols = ["🍒","🍋","🍏","🍍","⭐"];
-
-
-function triggerSpin() {
-    spinInput.value = "1";
-    form.querySelector('[name="spin"]').click(); 
-}
 
 form.addEventListener("submit", function(e) {
     const clicked = document.activeElement;
-
-    
     if (!clicked || clicked.name !== "spin") return;
 
     e.preventDefault();
-    spinInput.value = "1";
-
     reels.forEach(r => r.classList.add("spinning"));
 
     const interval = setInterval(() => {
@@ -193,63 +331,20 @@ form.addEventListener("submit", function(e) {
     setTimeout(() => {
         clearInterval(interval);
         reels.forEach(r => r.classList.remove("spinning"));
-        form.submit(); 
-    }, 1000);
+        form.submit();
+    }, 900);
 });
 </script>
 
+<script>
+const tile = document.getElementById("multiplier-tile");
+const panel = document.getElementById("multiplier-panel");
+
+tile.addEventListener("click", () => {
+    panel.classList.toggle("active");
+});
+</script>
+
+
 </body>
 </html>
-
-
-
-
-
-
-<!-- <h1>🎰 Slot Machine</h1>
------Wcześniejsza wersja-------
-<p>Aktualny bet: <strong>{{ bet }}</strong></p>
-<p>Saldo: <strong>{{ balance }}</strong></p>
-
-<form method="post">
-    {% csrf_token %}
-
-    <button type="submit" name="set_bet" value="10">Bet 10</button>
-    <button type="submit" name="set_bet" value="50">Bet 50</button>
-    <button type="submit" name="set_bet" value="100">Bet 100</button>
-
-    <br><br>
-
-    <button type="submit" name="spin">SPIN</button>  
-
-    <br><br>
-
-    <button type="submit" name="reset">RESET</button>  
-</form>
-
-<hr>
-
-{% if result %}
-    <p>
-       {% for symbol in result %} 
-        <span style="font-size: 2rem">{{symbol}}</span>
-        {% endfor %}
-    </p>
-{% endif %}
-
-{% if played %}
-    {% if win %}
-        <h2>🎉 Wygrana!</h2>
-    {% else %}
-        <h2>😞 Spróbuj ponownie!</h2>
-    {% endif %}
-
-        <p>Wynik: {{ payout }}</p>
-
-{% else %}
-    <p>Kliknij „Spin”, aby zagrać 🎰</p>
-{% endif %}
-
-{% if bankrut %}
-    <p>Brak środków, wypad z kasyna biedaku</p>
-{% endif %} -->
